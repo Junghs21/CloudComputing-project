@@ -59,25 +59,26 @@ public class ImageService {
         return image.orElse(null);
     }
 
-    public ResponseEntity<String> getImageJsonById(Long imageID) {
+    public ResponseEntity<Map<String, Object>> getImageJsonById(Long imageID) {
         //이미지 ID로 이미지 정보를 데이터베이스에서 조회
         Optional<Image> imageOptional = imageRepository.findById(imageID);
 
         if (imageOptional.isPresent()) {
             Image image = imageOptional.get();
+            Map<String, Object> jsonMap = new HashMap<>();
 
-            //이미지 정보를 JSON 형식으로 변환하여 응답
-            String json = "{ " +
-                    "\"UserID\": \"" + image.getUserID() + "\", " +
-                    "\"ImageID\": \"" + image.getImageID() + "\", " +
-                    "\"Tags\": " + getTagsJsonByImageId(imageID) + ", " +
-                    "\"UploadTime\": \"" + image.getUploadTime() + "\" " +
-                    "}";
+            jsonMap.put("UserID", image.getUserID());
+            jsonMap.put("ImageID", image.getImageID());
+            jsonMap.put("Tags", getTagsJsonByImageId(image.getImageID()));
+            jsonMap.put("UploadTime", image.getUploadTime());
 
-            return ResponseEntity.ok(json);
+            Map<String, Object> response = new HashMap<>();
+
+            response.put("data", List.of(jsonMap));
+
+            return ResponseEntity.ok(response);
         } else {
-            //해당 이미지 ID에 대한 이미지가 존재하지 않는 경우
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Image info not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Image info not found. ImageID = " + imageID));
         }
     }
 

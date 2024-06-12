@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class ImageController {
@@ -87,7 +88,7 @@ public class ImageController {
     }
 
     @GetMapping("/api/manage/image-data/{imageID}")
-    public ResponseEntity<String> getImageData(@PathVariable Long imageID) {
+    public ResponseEntity<Map<String, Object>> getImageData(@PathVariable Long imageID) {
         return imageService.getImageJsonById(imageID);
     }
 
